@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Search";
+}
+
+<h2>Search</h2>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('.datePicker').datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+    });
+</script>
+
+    <div class="grid-filter">        
+        <div class="inner">
+
+        <table>
+            <tr>
+                <td>Logger</td>
+                <td>@Html.DropDownList("LoggerProviderName", new SelectList(IDSM.Logging.Helpers.FormsHelper.LogProviderNames, "Value", "Text")) </td>
+            </tr>
+            <tr>
+                <td>Level</td>
+                <td>@Html.DropDownList("LogLevel", new SelectList(IDSM.Logging.Helpers.FormsHelper.LogLevels, "Value", "Text"))  </td>
+            </tr>
+            <tr>
+                <td>For</td>
+                <td>
+                    <input type="radio" id="dateOption1" name="dateoption" /> @Html.DropDownList("Period", new SelectList(IDSM.Logging.Helpers.FormsHelper.CommonTimePeriods, "Value", "Text"))                    
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="radio" id="dateOption2" name="dateoption" /> 
+                    <input style="width: 85px;" class="datePicker" type="text" id="txtDateStart" name="txtDateStart" /> and <input style="width: 85px;" class="datePicker" type="text" id="txtDateEnd" name="txtDateEnd" />
+                </td>
+            </tr>
+            <tr>
+                <td>Search criteria</td>
+                <td>
+                    <textarea id="criteria" name="criteria" rows="3" cols="60"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="text-align: right;">
+                    <input id="btnGo" name="btnGo" type="submit" value="Search" />                      
+                </td>
+            </tr>
+        </table>
+        
+        
+
+        </div>
+    </div>

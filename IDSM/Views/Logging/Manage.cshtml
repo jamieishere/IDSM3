@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Manage";
+}
+
+    <h2>Manage</h2>
+
+    @ViewData["Message"] 
+
+    @using (Html.BeginForm()) {
+
+        <fieldset>
+            <legend>Fields</legend>
+            
+            @Html.EditorForModel() 
+
+            <p>
+                <input type="submit" value="Clear Log" />
+            </p>
+
+        </fieldset>
+
+    }
