@@ -1,0 +1,35 @@
+﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
+@using IDSM.Helpers
+
+
+    <h2>@Model.UserName's team for the game <i>@Model.GameName</i></h2>
+
+    <div id="dialog-confirm" title="Add Player?">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Do you want to add this player?</p>
+    </div>
+    
+    @using (Html.BeginForm("Index", "ViewPlayers", FormMethod.Post))
+            {
+                if (!Model.HasEnded)
+                {
+                    <div id="ChosenPlayerRows">
+                        @(Model.PlayersChosen
+                              .Each(@<div class="playerRow">@Html.Partial("~/Views/ViewPlayers/ChosenPlayerRow.cshtml", item)</div>)
+                              .Else(
+                                  @<div class="playerRow">
+                                       <b>No Players Chosen Yet</b>
+                                   </div>
+                              )
+                              )
+        
+                    </div>
+                }
+                <input type="hidden" name="GameID" value="@Model.GameId" />
+                <input type="hidden" name="UserTeamID" value="@Model.UserTeamId" />
+            }
+    
+
+    @if (Model.GameCurrentOrderPosition != Model.UserTeamOrderPosition)
+    {
+                <p>Model.AddedPlayerMessage</p>
+    }

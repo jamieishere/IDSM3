@@ -201,6 +201,38 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        public ActiveTeamsViewModel GetAllGamesUserCurrentlyPlaying(int userId, int? userTeamId, string footballClub, string searchString)
+        {
+            //var _activeGames = _games.GetAllGamesUserCurrentlyPlaying(userId);
+            var _activeUserTeams = _userTeams.GetAllUserTeamsCurrentlyActive(userId);
+            var _activeTeamsVM = new List<ActiveTeam>();
+            var _tempTeam = new ActiveTeam();
+            var _tempTeamOV = new TeamOverViewViewModel();
+
+            //foreach(Game game in _games)
+            //{
+            //    _tempGame.GameName = game.Name;
+            //    _tempGame.OrderPosition = game.UserTeams.
+            //}
+
+            foreach (UserTeam uts in _activeUserTeams)
+            {
+                _tempTeam.GameName = uts.Game.Name;
+                _tempTeam.IsActive = (uts.OrderPosition==uts.Game.CurrentOrderPosition);
+                _tempTeam.UserTeamId = uts.Id;
+                _activeTeamsVM.Add(_tempTeam);
+            }
+            if (userTeamId != null)
+            {
+                return new ActiveTeamsViewModel() { ActiveTeams = _activeTeamsVM, TeamOverView = GetTeamOverViewViewModel((int)userTeamId, footballClub, searchString) };
+            }
+            else
+            {
+                return new ActiveTeamsViewModel() { ActiveTeams = _activeTeamsVM };
+            }
+            
+        }
+
         public TeamOverViewViewModel GetTeamOverViewViewModel(int userTeamId, string footballClub, string searchString)
         {
             IEnumerable<Banter> _banterForThisGame = _banters.GetList();
@@ -227,6 +259,7 @@ namespace IDSM.ServiceLayer
                     GameCurrentOrderPosition = 0,
                     UserTeamId = 0,
                     UserName = null,
+                    UserId = 0,
                     UserTeamOrderPosition = 0,
                     AddedPlayerMessage = null,
                     HasEnded = false,
@@ -300,6 +333,7 @@ namespace IDSM.ServiceLayer
                         GameName = _game.Name,
                         GameCurrentOrderPosition = _game.CurrentOrderPosition,
                         UserTeamId = _userTeam.Id,
+                        UserId = _userTeam.UserId,
                         UserName = _user.UserName,
                         UserTeamOrderPosition = _userTeam.OrderPosition,
                         AddedPlayerMessage = _addedPlayerMessage,

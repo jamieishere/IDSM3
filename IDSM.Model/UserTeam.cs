@@ -19,6 +19,7 @@ namespace IDSM.Model
         public UserTeam()
         {
             UserTeam_Players = new HashSet<UserTeam_Player>();
+            //Game = new Game();
         }
 
         [Key]

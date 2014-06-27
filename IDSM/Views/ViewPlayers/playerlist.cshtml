@@ -1,0 +1,74 @@
+﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
+@using IDSM.Helpers
+
+      @{
+
+         <table>
+                    @foreach (var item in Model.PlayersSearchedFor)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Club)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Position)
+                            </td>        
+                            <td>
+                                @if (!item.HasBeenChosen)
+                                {
+                                    @Html.ActionLink("Add to team", "AddPlayer", new { playerId = item.Id, userteamid = Model.UserTeamId, gameid = Model.GameId, userId = Model.UserId }, new { @class = "addItem" })
+                                }
+                            </td>
+                        </tr>
+                    }</table>
+    }
+       
+
+<script type="text/javascript">
+    var addLinkObj;
+
+    $(function () {
+        $("#dialog-confirm").dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 140,
+            modal: true,
+            buttons: {
+                "Are you sure you want to add this player?": function () {
+                    var path = $(this).data('link').href;
+                    $.ajax({
+                        url: path,
+                        cache: false,
+                        success: function (data) { return true; }
+                    });
+                    $(this).hide();
+                    $(this).dialog("close");
+                    addLinkObj.hide();
+                    return true;
+                },
+                Cancel: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+
+        $(".addItem").click(function (event) {
+            addLinkObj = $(this);
+            $("#dialog-confirm")
+                .data('link', this)
+                .dialog("open");
+        });
+    });
+
+    $(document).on("click", "a.deleteRow", function () {
+        $(this).parents("div.playerRow:first").remove();
+        return false;
+    });
+
+</script>

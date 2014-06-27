@@ -16,6 +16,7 @@ namespace IDSM.Repository
     public interface IGameRepository : IRepositoryBase<Game>
     {
         IEnumerable<Game> GetAllGames();
+        IEnumerable<Game> GetAllGamesUserCurrentlyPlaying(int userId);
     }
 
 
@@ -27,6 +28,7 @@ namespace IDSM.Repository
     {
         public GameRepository(IDSMContext context) : base(context) { }
 
+        /// <summary>
         /// GetAllGames
         /// Gets all Games, eager loads User (is this correct term?)
         /// </summary>
@@ -36,6 +38,21 @@ namespace IDSM.Repository
             var _games = DataContext.Games
                     .Include(x => x.UserTeams)
                     .Include(x => x.UserTeams.Select(y => y.User))
+                    .ToList();
+            return _games;
+        }
+
+        /// <summary>
+        /// GetAllGamesUserCurrentlyPlaying
+        /// Gets all Games, eager loads User (is this correct term?)
+        /// </summary>
+        /// <returns>IEnumerable<Game></returns>
+        public IEnumerable<Game> GetAllGamesUserCurrentlyPlaying(int userId)
+        {
+            var _games = DataContext.Games
+                    //.Include(x => x.UserTeams.Where(u => u.UserId == userId).SingleOrDefault())
+                    .Include(x => x.UserTeams.SingleOrDefault(u => u.UserId == userId))
+                    .Where(x => x.HasEnded!=true)
                     .ToList();
             return _games;
         }

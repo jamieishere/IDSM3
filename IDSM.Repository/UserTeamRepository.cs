@@ -1,24 +1,31 @@
 ﻿using IDSM.Model;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IDSM.Logging.Services.Logging.Log4Net;
-using IDSM.Exceptions;
-using IDSM.Logging.Services.Logging;
-using System.Transactions;
-using System.Data.Common;
 
 namespace IDSM.Repository
 {
     public interface IUserTeamRepository : IRepositoryBase<UserTeam>
     {
+        IEnumerable<UserTeam> GetAllUserTeamsCurrentlyActive(int userId);
     }
 
     public class UserTeamRepository : RepositoryBase<UserTeam>, IUserTeamRepository
     {
         public UserTeamRepository(IDSMContext context) : base(context) { }
+
+        /// <summary>
+        /// GetAllUserTeamsCurrentlyActive
+        /// Gets all UserTeams, eager loads Game (is this correct term?)
+        /// </summary>
+        /// <returns>IEnumerable<UserTeam></returns>
+        public IEnumerable<UserTeam> GetAllUserTeamsCurrentlyActive(int userId)
+        {
+            var _userTeams = DataContext.UserTeams
+                            .Where(x => x.UserId==userId && x.Game.HasEnded != true)
+                            .ToList();
+            return _userTeams;
+        }
     }
+
+
 }

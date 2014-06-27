@@ -13,6 +13,7 @@ namespace IDSM.Model.ViewModels
         public string GameName { get; set; }
         public int GameCurrentOrderPosition { get; set; }
         public int UserTeamId { get; set; }
+        public int UserId { get; set; }
         public string UserName { get; set; }
         public int UserTeamOrderPosition { get; set; }
         public string AddedPlayerMessage { get; set; }

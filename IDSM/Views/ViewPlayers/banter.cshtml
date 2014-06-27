@@ -1,0 +1,25 @@
+﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
+@using IDSM.Helpers
+
+        <div style="float: left; width: 50%;">
+    
+            <h2>BANTER</h2>
+    
+            @using (Html.BeginForm("AddBanter", "ViewPlayers", FormMethod.Post))
+            {
+                <p>banter: @Html.TextBox("Banter") 
+                    <input type="hidden" name="userTeamId" value="@Model.UserTeamId" />
+                    <input type="submit" value="post banter" /></p>
+            }
+    
+            <h2>List of Banter</h2>
+            <table>
+                @foreach (var item in Model.Banters)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BanterText)
+                        </td>
+                    </tr>
+                }</table>        
+        </div>

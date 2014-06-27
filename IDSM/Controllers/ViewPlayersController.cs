@@ -17,37 +17,34 @@ namespace IDSM.Controllers
             _service = service;
         }
 
-        public ActionResult Index(int? userTeamId, string footballClub, string searchString)
+        public ActionResult Index(int? userTeamId, int userId, int gameId, string footballClub, string searchString)
         {
-            // change this.
-            // ViewPlayersViewModel needs to:
-            // return selectlist inside the view model rather than set viewbag here - see http://stackoverflow.com/questions/6623700/how-to-bind-a-selectlist-with-viewmodel
-            // then...
-
-            if (userTeamId == null) userTeamId = 0;
-            return View(_service.GetTeamOverViewViewModel((int)userTeamId, footballClub, searchString));
+            var _activeTeams = _service.GetAllGamesUserCurrentlyPlaying(userId, userTeamId, footballClub, searchString);
+            return View(_activeTeams);
         }
 
-
         [HttpPost]
-        public ActionResult TeamOverView(int userTeamId, string footballClub, string searchString)
+        public ActionResult TeamOverView(int userTeamId, string clubs, string searchString)
         {
-            var _teamOverView = _service.GetTeamOverViewViewModel((int) userTeamId, "", "");
+            if (clubs == null) clubs = "";
+            if (searchString == null) searchString = "";
+
+            var _teamOverView = _service.GetTeamOverViewViewModel((int)userTeamId, clubs, searchString);
             if (Request.IsAjaxRequest())
             {
                
-                return PartialView("teamdetails", _teamOverView);
+                return PartialView("playerlist", _teamOverView);
             }
-            return PartialView("teamdetails", _teamOverView);
+            return PartialView("playerlist", _teamOverView);
         }
 
-        public ActionResult AddPlayer(int playerId, int userTeamId, int gameId)
+        public ActionResult AddPlayer(int playerId, int userTeamId, int gameId, int userId)
         {
             ViewBag.Status = "Thre was a problem, player not added"; 
             if(_service.AddUserTeamPlayer(playerId, userTeamId, gameId).Status)
                 ViewBag.Status = "Player added";
 
-            return RedirectToAction("Index", new { userteamid = userTeamId });
+            return RedirectToAction("Index", new { userTeamId = userTeamId, gameId = gameId, userId = userId });
         }
 
         public ActionResult AddBanter(int userTeamId, string banter)

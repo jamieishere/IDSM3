@@ -11,6 +11,9 @@ namespace IDSM.ServiceLayer
         void Save();
 
         IEnumerable<Game> GetAllGames();
+        //ActiveTeamsViewModel GetAllGamesUserCurrentlyPlaying(int userId);
+
+        ActiveTeamsViewModel GetAllGamesUserCurrentlyPlaying(int userId, int? userTeamId, string footballClub, string searchString);
         bool TryGetUserTeam(out UserTeam ut, int userTeamId);
         IEnumerable<string> GetAllClubs();
         OperationStatus CreateGame(int userId, string name);
@@ -19,6 +22,7 @@ namespace IDSM.ServiceLayer
         void AddBanter(int userTeamId, string banter);
         void ResetGame(int gameId);
         void AddUserToGame(int userId, int gameId);
+
         AddUserTeamViewModel GetAddUserTeamViewModelForGame(Game game);
        // ViewPlayersViewModel GetViewPlayersViewModel(int userTeamId, string footballClub, string searchString);
         OperationStatus AddUserTeamPlayer(int playerId, int userTeamId, int gameId);

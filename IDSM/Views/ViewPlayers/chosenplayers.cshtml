@@ -1,0 +1,23 @@
+﻿@using IDSM.Helpers
+@model IDSM.Model.ViewModels.TeamOverViewViewModel
+
+helloooo
+@using (Html.BeginForm("Index", "ViewPlayers", FormMethod.Post))
+            {
+                if (!Model.HasEnded)
+                {
+                    <div id="ChosenPlayerRows">
+                        @(Model.PlayersChosen
+                              .Each(@<div class="playerRow">@Html.Partial("~/Views/ViewPlayers/ChosenPlayerRow.cshtml", item)</div>)
+                              .Else(
+                                  @<div class="playerRow">
+                                       <b>No Players Chosen Yet</b>
+                                   </div>
+                              )
+                              )
+        
+                    </div>
+                }
+                <input type="hidden" name="GameID" value="@Model.GameId" />
+                <input type="hidden" name="UserTeamID" value="@Model.UserTeamId" />
+            }
