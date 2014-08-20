@@ -3,39 +3,66 @@
 @{
     ViewBag.Title = "ViewPlayers";
 }
-        <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+        
 
-    <div style="float:left; width:100%;">
+<h3>List of your currently active games</h3>
+<div style="float:left; width:100%;">
         <p>
-            Forloop here over all user's currently active games.
-            @foreach (var team in Model.ActiveTeams)
-            {
-                <a href="#" class="buttonId currentplayer" data-userteamid="@team.UserTeamId" data-footballclub="" data-searchstring="">@team.GameName</a>
-            }
+             @(Model.ActiveTeams
+                              .Each(@<a href="#" class="buttonId currentplayer" data-userteamid="@item.UserTeamId" data-footballclub="" data-searchstring="">@item.GameName</a>)
+                              .Else(
+                                  @<div class="playerRow">
+                                       <b>No active games</b>
+                                   </div>
+                              )
+                   )
         </p>
 </div>
-<div style="float:left; width:100%;">
-    <p>Banter Ticker Tape</p>
-</div>
-<div id="teampartial">
-</div>
-<div id="teamtest">
-</div>
+<hr/>
+
+<h3>You are currently viewing your team for the game: @Model.TeamOverView.GameName</h3>
+<br/>
+
+
 <div id="leftcol">
     <div id="chosenplayers">
         @{ Html.RenderPartial("chosenplayers", Model.TeamOverView); }
     </div>
-    <div id="searchform">
-        @{ Html.RenderPartial("searchform", Model.TeamOverView); }
-    </div>
-    <div id="playerlist">
-        @{ Html.RenderPartial("playerlist", Model.TeamOverView); }
-    </div>
-</div>
-<div id="banter">
-    @{ Html.RenderPartial("banter", Model.TeamOverView); }
+    @if ((Model.TeamOverView.GameCurrentOrderPosition == Model.TeamOverView.UserTeamOrderPosition) && !Model.TeamOverView.HasEnded)
+    {
+        <div id="searchform">
+            @{ Html.RenderPartial("searchform", Model.TeamOverView); }
+        </div>
+        <div id="playerlist">
+            @{ Html.RenderPartial("playerlist", Model.TeamOverView); }
+        </div>
+    }else if(!Model.TeamOverView.HasEnded)
+    {
+        <h3>Wait till next turn to choose next player</h3>
+    }else
+    {
+        <h3>@Model.TeamOverView.AddedPlayerMessage</h3>
+    }
 </div>
 
+<div id="chat">
+    <h3>CHTA</h3>
+    @{ Html.RenderPartial("chat", Model.TeamOverView.Banters); } 
+</div>
+
+<div id="banterform">
+        @{ Html.RenderPartial("banter", Model.TeamOverView); }
+    </div>
+<div id="banterlist">
+    <div style="float: right; width: 50%;">  
+        @{ Html.RenderPartial("banterlist", Model.TeamOverView.Banters); }
+    </div>        
+</div>
+
+
+
+@if(!Model.TeamOverView.HasEnded)
+{
 <script type="text/javascript">
     /*var returnSelectTeam = function () {
         debugger;
@@ -74,7 +101,8 @@
     $('.buttonId').click(function () {
         returnTeam(this);
     });
-    /*$('#filterPlayers').submit(function () {
+/*$('#filterPlayers').submit(function () {
         returnSelectTeam();
     });*/
 </script>
+    }

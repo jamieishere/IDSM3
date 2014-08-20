@@ -1,7 +1,7 @@
 ﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
 @using IDSM.Helpers
 
-<h2>List of Footballers</h2>
+<h3>It's your turn - add a player from this List</h3>
 @{
         // don't know why but this doesn't work (loads data into whole page rather than the div)
         //using (Html.BeginForm("TeamOverView", "ViewPlayers", FormMethod.Post, new { id = "filterPlayers" }))
@@ -17,6 +17,7 @@
                         @Html.DropDownListFor(x => x.Clubs, new SelectList(Model.Clubs, "Value", "Text"), "All")
                         Name: @Html.TextBox("searchString") 
                         <input type="hidden" name="userTeamID" value="@Model.UserTeamId" />
+                        <input type="hidden" name="gameID" value="@Model.GameId" />
                         <input type="submit" value="Filter" /></p>
        }
                

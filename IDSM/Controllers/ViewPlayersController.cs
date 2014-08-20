@@ -10,7 +10,7 @@ namespace IDSM.Controllers
     public class ViewPlayersController : Controller
     {
         private IService _service;
-        private const int _teamSize = 1;
+        private const int _teamSize = 5;
 
         public ViewPlayersController(IService service)
         {
@@ -24,12 +24,12 @@ namespace IDSM.Controllers
         }
 
         [HttpPost]
-        public ActionResult TeamOverView(int userTeamId, string clubs, string searchString)
+        public ActionResult TeamOverView(int userTeamId, string clubs, string searchString, int gameId)
         {
             if (clubs == null) clubs = "";
             if (searchString == null) searchString = "";
 
-            var _teamOverView = _service.GetTeamOverViewViewModel((int)userTeamId, clubs, searchString);
+            var _teamOverView = _service.GetTeamOverViewViewModel((int)userTeamId, gameId, clubs, searchString);
             if (Request.IsAjaxRequest())
             {
                
@@ -47,10 +47,18 @@ namespace IDSM.Controllers
             return RedirectToAction("Index", new { userTeamId = userTeamId, gameId = gameId, userId = userId });
         }
 
-        public ActionResult AddBanter(int userTeamId, string banter)
+        [HttpPost]
+        public ActionResult AddBanter(int gameId, int userTeamId, string banter)
         {
-            _service.AddBanter(userTeamId, banter);
-            return RedirectToAction("Index", new { userteamid = userTeamId });
+            _service.AddBanter(gameId, userTeamId, banter);
+            var _updatedBanter = _service.GetGameBanter(gameId);
+            return PartialView("banterlist", _updatedBanter);
+        }
+
+        public ActionResult Chat()
+        {
+            var _updatedBanter = _service.GetGameBanter(1);
+            return PartialView("banterlist", _updatedBanter);
         }
     }
 }

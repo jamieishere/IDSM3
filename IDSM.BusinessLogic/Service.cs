@@ -13,6 +13,7 @@ using AutoMapper;
 using System.IO;
 using CsvHelper;
 using IDSM.ViewModel;
+using System.Configuration;
 
 namespace IDSM.ServiceLayer
 {
@@ -153,11 +154,11 @@ namespace IDSM.ServiceLayer
             }
         }
 
-        public void AddBanter(int userTeamId, string banter)
+        public void AddBanter(int gameId, int userTeamId, string banter)
         {
             try
             {
-                _banters.Create(new Banter() {UserTeamId = userTeamId, BanterText = banter, TimeStamp = DateTime.Now});
+                _banters.Create(new Banter() {GameId = gameId, UserTeamId = userTeamId, BanterText = banter, TimeStamp = DateTime.Now});
                 Save();
             }
             catch (Exception _exp)
@@ -224,7 +225,7 @@ namespace IDSM.ServiceLayer
             }
             if (userTeamId != null)
             {
-                return new ActiveTeamsViewModel() { ActiveTeams = _activeTeamsVM, TeamOverView = GetTeamOverViewViewModel((int)userTeamId, footballClub, searchString) };
+                return new ActiveTeamsViewModel() { ActiveTeams = _activeTeamsVM, TeamOverView = GetTeamOverViewViewModel((int)userTeamId,null,footballClub, searchString) };
             }
             else
             {
@@ -233,9 +234,16 @@ namespace IDSM.ServiceLayer
             
         }
 
-        public TeamOverViewViewModel GetTeamOverViewViewModel(int userTeamId, string footballClub, string searchString)
+        //public GameBanterViewModel GetGameBanter(int gameId)
+        //{
+        //    return new GameBanterViewModel() { Banters = _banters.GetList(g => g.Id == gameId) };
+        //}
+
+
+        public TeamOverViewViewModel GetTeamOverViewViewModel(int userTeamId, int? gameId, string footballClub, string searchString)
         {
-            IEnumerable<Banter> _banterForThisGame = _banters.GetList();
+
+            IEnumerable<Banter> _banterForThisGame = new List<Banter>();
 
             //IEnumerable<SelectListItem> _clubs = new SelectList(_players.GetList().OrderBy(p => p.Club).Select(p => p.Club).Distinct());
             // refactor
@@ -291,9 +299,13 @@ namespace IDSM.ServiceLayer
                     if (_game.HasEnded)
                     {
                         _addedPlayerMessage = "The game has ended.";
+                        _banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
+                        _playersPickedForThisTeam = GetAllChosenUserTeamPlayersForTeam(_userTeam.Id);
+                        _playersNotPickedForAnyTeam = GetPlayersNotPickedForAnyTeam(_game.Id, footballClub, searchString);
                     }
                     else
                     {
+                        _banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
                         _playersPickedForThisTeam = GetAllChosenUserTeamPlayersForTeam(_userTeam.Id);
                         _playersNotPickedForAnyTeam = GetPlayersNotPickedForAnyTeam(_game.Id, footballClub, searchString);
 
@@ -351,6 +363,24 @@ namespace IDSM.ServiceLayer
                 }
             }
         }
+
+        public IEnumerable<Game> GetAllGamesUserParticipatesIn(int p)
+        {
+            var _allGamesForThisUser = _games.GetAllGamesUserParticipatesIn(p);
+            return _allGamesForThisUser;
+        }
+
+        public IEnumerable<Banter> GetGameBanter(int gameId)
+        {
+            var _allBanterForThisGame = _banters.GetList(b => b.GameId==gameId);
+            return _allBanterForThisGame;
+        }
+
+        //public IEnumerable<Game> GetAllGamesCreatedByThisUserOrThatHaveThisUserAsAPlayer(int p)
+        //{
+        //    var _allGamesForThisUser = _games.GetAllGamesCreatedByThisUserOrThatHaveThisUserAsAPlayer(p);
+        //    return _allGamesForThisUser;
+        //}
 
 
         //public ViewPlayersViewModel GetViewPlayersViewModel(int userTeamId, string footballClub, string searchString)
@@ -654,8 +684,17 @@ namespace IDSM.ServiceLayer
             try
             {
                 _opStatus = SaveUserTeamPlayer(userTeamId, gameId, 1, 1, playerId);
-                _opStatus = UpdateGame(gameId, userTeamId, 1);
-                //_unitOfWork.Save();
+                Save();
+                
+                int _teamSize;
+                if (int.TryParse(ConfigurationManager.AppSettings["TeamSize"], out _teamSize))
+                {
+                    _opStatus = UpdateGame(gameId, userTeamId, _teamSize);
+                }
+                else { _opStatus = UpdateGame(gameId, userTeamId, 1); }
+
+                Save();
+
             }
             catch (Exception exp)
             {

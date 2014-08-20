@@ -94,7 +94,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\AddUserTeamViewModel.cs" />
-    <Compile Include="ViewModels\ChosenTeamViewModel.cs" />
     <Compile Include="ViewModels\TeamOverViewViewModel.cs" />
     <Compile Include="ViewModels\teamdetails.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />

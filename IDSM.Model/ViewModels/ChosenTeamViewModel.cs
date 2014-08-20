@@ -6,7 +6,7 @@ using System.Web;
 using IDSM.Model;
 
 
-namespace IDSM.ViewModel
+namespace IDSM.Model.ViewModels
 {
     /// <summary>
     /// ChosenTeamViewModel
@@ -15,8 +15,7 @@ namespace IDSM.ViewModel
     /// </summary>
     public class ChosenTeamViewModel
     {
-        public IEnumerable<UserTeam_Player> UserTeam_Players { get; set; }
-        //public IEnumerable<Player> Players { get; set; }
+        public IEnumerable<UserTeam_Player> PlayersChosen { get; set; }
         public int GameID { get; set; }
         public int UserTeamID { get; set; }
     }

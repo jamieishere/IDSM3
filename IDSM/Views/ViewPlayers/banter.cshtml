@@ -1,25 +1,29 @@
 ﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
 @using IDSM.Helpers
 
-        <div style="float: left; width: 50%;">
-    
-            <h2>BANTER</h2>
-    
-            @using (Html.BeginForm("AddBanter", "ViewPlayers", FormMethod.Post))
-            {
-                <p>banter: @Html.TextBox("Banter") 
-                    <input type="hidden" name="userTeamId" value="@Model.UserTeamId" />
+            @{
+        // don't know why but this doesn't work (loads data into whole page rather than the div)
+        //using (Html.BeginForm("TeamOverView", "ViewPlayers", FormMethod.Post, new { id = "filterPlayers" }))
+                using (Ajax.BeginForm("AddBanter", "ViewPlayers", new AjaxOptions
+        {
+            HttpMethod = "POST",
+            UpdateTargetId = "banterlist",
+            InsertionMode = InsertionMode.Replace
+            
+        }))
+       {
+           <p>banter: @Html.TextBox("Banter") 
+               <input type="hidden" name="gameId" value="@Model.GameId" />
+               <input type="hidden" name="userTeamId" value="@Model.UserTeamId" />
                     <input type="submit" value="post banter" /></p>
+       }
+               
             }
+
+        @{ // @using (Html.BeginForm("AddBanter", "ViewPlayers", FormMethod.Post))
+           // 
+
+              <!--  -->
+           }
     
-            <h2>List of Banter</h2>
-            <table>
-                @foreach (var item in Model.Banters)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BanterText)
-                        </td>
-                    </tr>
-                }</table>        
-        </div>
+  

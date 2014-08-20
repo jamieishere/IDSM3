@@ -16,7 +16,7 @@ namespace IDSM.Repository
     public interface IGameRepository : IRepositoryBase<Game>
     {
         IEnumerable<Game> GetAllGames();
-        IEnumerable<Game> GetAllGamesUserCurrentlyPlaying(int userId);
+        IEnumerable<Game> GetAllGamesUserParticipatesIn(int i);
     }
 
 
@@ -43,19 +43,19 @@ namespace IDSM.Repository
         }
 
         /// <summary>
-        /// GetAllGamesUserCurrentlyPlaying
-        /// Gets all Games, eager loads User (is this correct term?)
+        /// Get all Games where the CreatorId==currentUserId, or one of the Game's userteam's id's==currentUserId
         /// </summary>
-        /// <returns>IEnumerable<Game></returns>
-        public IEnumerable<Game> GetAllGamesUserCurrentlyPlaying(int userId)
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public IEnumerable<Game> GetAllGamesUserParticipatesIn(int userId)
         {
-            var _games = DataContext.Games
-                    //.Include(x => x.UserTeams.Where(u => u.UserId == userId).SingleOrDefault())
-                    .Include(x => x.UserTeams.SingleOrDefault(u => u.UserId == userId))
-                    .Where(x => x.HasEnded!=true)
-                    .ToList();
+            // syntax for left join from http://msdn.microsoft.com/en-us/vstudio/ee908647.aspx#leftouterjoin
+            var _games = (from _g in DataContext.Games
+                         join _ut in DataContext.UserTeams on _g.Id equals _ut.GameId into _uts
+                         from _ut in _uts.DefaultIfEmpty()
+                         where _g.CreatorId==userId || _ut.UserId==userId || userId==1 //(1=SuperAdmin, so can see all games).
+                         select _g).Distinct();
             return _games;
         }
-
     }
 }

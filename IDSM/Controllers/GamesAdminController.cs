@@ -3,6 +3,7 @@ using System.Web.Mvc;
 ﻿using IDSM.Repository;
 ﻿using IDSM.ViewModel;
 using IDSM.ServiceLayer;
+using WebMatrix.WebData;
 
 namespace IDSM.Controllers
 {
@@ -23,7 +24,8 @@ namespace IDSM.Controllers
         /// <returns></returns>
         public ViewResult Index()
         {
-            GameViewModel _gvm = new GameViewModel { Games = _service.GetAllGames() };
+           // GameViewModel _gvm = new GameViewModel { Games = _service.GetAllGames() };
+            GameViewModel _gvm = new GameViewModel { Games = _service.GetAllGamesUserParticipatesIn(WebSecurity.CurrentUserId) };
             return View(_gvm);
         }
 
