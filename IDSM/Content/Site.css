@@ -758,13 +758,3 @@ tr.pager td {
 }
 
 
-    /* IDSM Specific Styles
-    ----------------------------------------------------------*/
-  a.currentplayer{color:green;}
-  a.notcurrentplayer{color:red;}
-
-  #leftcol, #banter {
-      width: 50%;
-      float: left;
-  }
-

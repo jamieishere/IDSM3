@@ -1,30 +1,28 @@
 ﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
-@using IDSM.Helpers
 
-      @{
-
-         <table>
-                    @foreach (var item in Model.PlayersSearchedFor)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Club)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Position)
-                            </td>        
-                            <td>
-                                @if (!item.HasBeenChosen)
-                                {
-                                    @Html.ActionLink("Add to team", "AddPlayer", new { playerId = item.Id, userteamid = Model.UserTeamId, gameid = Model.GameId, userId = Model.UserId }, new { @class = "addItem" })
-                                }
-                            </td>
-                        </tr>
-                    }</table>
-    }
+@{
+    <table>
+    @foreach (var item in Model.PlayersSearchedFor)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Club)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>        
+            <td>
+                @if (!item.HasBeenChosen)
+                {
+                    @Html.ActionLink("Add to team", "AddPlayer", new { playerId = item.Id, userteamid = Model.UserTeamId, gameid = Model.GameId, userId = Model.UserId }, new { @class = "addItem" })
+                }
+            </td>
+        </tr>
+    }</table>
+}
        
 
 <script type="text/javascript">
@@ -47,6 +45,7 @@
                     $(this).hide();
                     $(this).dialog("close");
                     addLinkObj.hide();
+                    //location.reload();
                     return true;
                 },
                 Cancel: function () {
@@ -58,7 +57,8 @@
 
     $(document).ready(function () {
 
-        $(".addItem").click(function (event) {
+        $(".addItem").click(function (e) {
+            //e.preventDefault();
             addLinkObj = $(this);
             $("#dialog-confirm")
                 .data('link', this)
@@ -66,9 +66,9 @@
         });
     });
 
-    $(document).on("click", "a.deleteRow", function () {
-        $(this).parents("div.playerRow:first").remove();
-        return false;
-    });
+    //$(document).on("click", "a.deleteRow", function () {
+    //    $(this).parents("div.playerRow:first").remove();
+    //    return false;
+    //});
 
 </script>

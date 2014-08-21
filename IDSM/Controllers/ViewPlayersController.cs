@@ -7,6 +7,7 @@ using IDSM.ServiceLayer;
 
 namespace IDSM.Controllers
 {
+    [Authorize]
     public class ViewPlayersController : Controller
     {
         private IService _service;

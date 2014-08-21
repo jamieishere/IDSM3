@@ -2,8 +2,11 @@
 using Owin;
 using Microsoft.AspNet.SignalR;
 
-[assembly: OwinStartup(typeof(IDSM.SignalRChat.Startup))]
-namespace IDSM.SignalRChat
+//[assembly: OwinStartup(typeof(IDSM.SignalRChat.Startup))]
+//namespace IDSM.SignalRChat
+[assembly: OwinStartup(typeof(IDSM.Signlr.Startup))]
+
+namespace IDSM.Signlr
 {
     public class Startup
     {
@@ -11,7 +14,8 @@ namespace IDSM.SignalRChat
         {
             // Any connection or hub wire up and configuration should go here
             //app.MapSignalR();
-            Microsoft.AspNet.SignalR.StockTicker.Startup.ConfigureSignalR(app);
+            IDSM.Signlr.Startup.ConfigureSignalR(app);
+            //Microsoft.AspNet.SignalR.StockTicker.Startup.ConfigureSignalR(app);
         }
     }
 }

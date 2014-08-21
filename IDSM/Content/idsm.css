@@ -1,1 +1,81 @@
-﻿
+﻿    /* IDSM Specific Styles
+    ----------------------------------------------------------*/
+  a.currentplayer{color:green;}
+  a.notcurrentplayer{color:red;}
+
+  #leftcol{
+      width: 50%;
+      float: left;
+  }
+
+  #rightcol{
+      width: 50%;
+      float: left;
+  }
+
+
+  #banter{
+      width: 50%;
+      float: left;
+  }
+
+  #activegames {
+      width: 100%;
+      border-bottom: 1px solid black;
+  }
+
+#gameheading {
+    width: 100%;
+    text-align: center;
+    padding: 0px 0 10px 0;
+}
+
+  #chosenplayers{
+          text-align: center;
+      padding-bottom: 15px;
+  }
+   #searchform{
+          text-align: center;
+  }
+
+  #searchform select{
+      width: 120px;
+  }
+
+    #searchform input[type=text]{
+      width: 170px;
+        height: 12px;
+  }
+
+  #searchform input[type=submit]{
+      width: 50px;
+      height: 23px;
+      padding: 2px 0 10px 0;
+
+  }
+
+    #playerlist{
+
+        padding: 0 0 0 0;
+        font-size: 11px;
+  }
+
+     #chat{
+          text-align: center;
+      padding-bottom: 15px;
+  }
+
+         #chat input[type=text]{
+      width: 170px;
+        height: 12px;
+  }
+
+  #chat input[type=button]{
+      width: 50px;
+      height: 23px;
+      padding: 2px 0 10px 0;
+
+  }
+   #banterlist{
+          text-align: center;
+  }

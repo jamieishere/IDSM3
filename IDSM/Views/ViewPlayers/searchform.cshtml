@@ -1,10 +1,8 @@
 ﻿@model IDSM.Model.ViewModels.TeamOverViewViewModel
 @using IDSM.Helpers
 
-<h3>It's your turn - add a player from this List</h3>
+<h3>It's your turn - add a player:</h3>
 @{
-        // don't know why but this doesn't work (loads data into whole page rather than the div)
-        //using (Html.BeginForm("TeamOverView", "ViewPlayers", FormMethod.Post, new { id = "filterPlayers" }))
         using (Ajax.BeginForm("TeamOverView", "ViewPlayers", new AjaxOptions
         {
             HttpMethod = "POST",
@@ -22,23 +20,3 @@
        }
                
     }
-
-        
-@*<script type="text/javascript">
-    var returnSelectTeam = function () {
-        debugger;
-        $.ajax({
-            type: 'POST',
-            url: '/ViewPlayers/TeamOverView',
-            data: $("#filterPlayers").serialize(),
-            success: function (data) {
-                $('#teamtest').empty();
-                $('#teamtest').append(data);
-            }
-        });
-    };
-
-    //$('#filterPlayers').submit(function () {
-    //    returnSelectTeam();
-    //});
-</script>*@

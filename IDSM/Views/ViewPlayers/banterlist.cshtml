@@ -1,15 +1,8 @@
 ﻿@model IEnumerable<IDSM.Model.Banter>
-@using IDSM.Helpers
    
-            <h3>Banter Stream</h3>
-            <table>
-                <!--foreach (var item in Model.Banters)-->
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BanterText)
-                        </td>
-                    </tr>
-                }</table>        
+<h3>Banter Stream</h3>
+@foreach (var item in Model)
+{
+    <p>@Html.DisplayFor(modelItem => item.BanterText)</p>           
+}
 

@@ -2,7 +2,10 @@
 @model IDSM.Model.ViewModels.TeamOverViewViewModel
 
 
-<h3>List of players chosen for your team in: @Model.GameName</h3>
+<h3>Players in your team so far..</h3>
+    <div id="dialog-confirm" title="Add Player?">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Do you want to add this player?</p>
+    </div>
 @using (Html.BeginForm("Index", "ViewPlayers", FormMethod.Post))
             {
                 //if (!Model.HasEnded)

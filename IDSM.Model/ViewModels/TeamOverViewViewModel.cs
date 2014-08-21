@@ -7,7 +7,9 @@ namespace IDSM.Model.ViewModels
     {
         public IEnumerable<PlayerDto> PlayersSearchedFor { get; set; }
         public IEnumerable<UserTeam_Player> PlayersChosen { get; set; }
+        //public IEnumerable<Banter> Banters { get; set; }
         public IEnumerable<Banter> Banters { get; set; }
+        
         public IEnumerable<SelectListItem> Clubs { get; set; }
         public int GameId { get; set; }
         public string GameName { get; set; }
@@ -23,5 +25,12 @@ namespace IDSM.Model.ViewModels
     public class PlayerDto : Player
     {
         public bool HasBeenChosen { get; set; }
+    }
+
+    public class Banters
+    {
+        //public IEnumerable<Banter> Banters { get; set; }
+        public int GameId { get; set; }
+        public int UserTeamId { get; set; }
     }
 }

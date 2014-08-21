@@ -120,6 +120,16 @@ namespace IDSM.ServiceLayer
                         _userTeams.Delete(_team);
                     }
                 }
+
+                IEnumerable<Banter> _allBanterForGame = _banters.GetList(x => x.GameId == gameId);
+                if (_allBanterForGame != null)
+                {
+                    foreach (Banter _banter in _allBanterForGame)
+                    {
+                        _banters.Delete(_banter);
+                    }
+                } 
+
                 //reset all game properties to default
                 Game _game = _games.Get(x => x.Id == gameId);
                 _game.WinnerId = 0;
@@ -299,13 +309,14 @@ namespace IDSM.ServiceLayer
                     if (_game.HasEnded)
                     {
                         _addedPlayerMessage = "The game has ended.";
-                        _banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
+                        //_banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
+                        _banterForThisGame = GetGameBanter(_userTeam.GameId);
                         _playersPickedForThisTeam = GetAllChosenUserTeamPlayersForTeam(_userTeam.Id);
                         _playersNotPickedForAnyTeam = GetPlayersNotPickedForAnyTeam(_game.Id, footballClub, searchString);
                     }
                     else
                     {
-                        _banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
+                        _banterForThisGame = GetGameBanter(_userTeam.GameId);
                         _playersPickedForThisTeam = GetAllChosenUserTeamPlayersForTeam(_userTeam.Id);
                         _playersNotPickedForAnyTeam = GetPlayersNotPickedForAnyTeam(_game.Id, footballClub, searchString);
 
@@ -372,7 +383,7 @@ namespace IDSM.ServiceLayer
 
         public IEnumerable<Banter> GetGameBanter(int gameId)
         {
-            var _allBanterForThisGame = _banters.GetList(b => b.GameId==gameId);
+            var _allBanterForThisGame = _banters.GetList(b => b.GameId==gameId).OrderByDescending(b => b.TimeStamp);
             return _allBanterForThisGame;
         }
 
