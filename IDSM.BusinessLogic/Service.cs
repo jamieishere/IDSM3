@@ -231,7 +231,10 @@ namespace IDSM.ServiceLayer
                 _tempTeam.GameName = uts.Game.Name;
                 _tempTeam.IsActive = (uts.OrderPosition==uts.Game.CurrentOrderPosition);
                 _tempTeam.UserTeamId = uts.Id;
+                _tempTeam.UserId = uts.UserId;
+                _tempTeam.GameId = uts.GameId;
                 _activeTeamsVM.Add(_tempTeam);
+                _tempTeam = new ActiveTeam();  // item stored in list is reference, not copy... need to new up item othrewise just end up with list of same items
             }
             if (userTeamId != null)
             {
@@ -244,16 +247,22 @@ namespace IDSM.ServiceLayer
             
         }
 
-        //public GameBanterViewModel GetGameBanter(int gameId)
-        //{
-        //    return new GameBanterViewModel() { Banters = _banters.GetList(g => g.Id == gameId) };
-        //}
-
+        public TeamOverViewViewModel GetNextTeamOverViewViewModel(int userTeamId, int gameId)
+        {
+            return GetTeamOverViewVm(userTeamId, gameId, "", "", true);
+        }
 
         public TeamOverViewViewModel GetTeamOverViewViewModel(int userTeamId, int? gameId, string footballClub, string searchString)
         {
+            return GetTeamOverViewVm(userTeamId, gameId, footballClub, searchString, false);
+        }
 
-            IEnumerable<Banter> _banterForThisGame = new List<Banter>();
+
+        private TeamOverViewViewModel GetTeamOverViewVm(int userTeamId, int? gameId, string footballClub, string searchString, bool getNextTeam)
+        {
+            BantersDto _bantersDto = new BantersDto()
+                {Banter = new List<Banter>(), CurrentGameId = (gameId==null) ? 0 : (int)gameId, CurrentUserTeamId = userTeamId};
+           // IEnumerable<Banter> _banterForThisGame = new List<Banter>();
 
             //IEnumerable<SelectListItem> _clubs = new SelectList(_players.GetList().OrderBy(p => p.Club).Select(p => p.Club).Distinct());
             // refactor
@@ -266,6 +275,7 @@ namespace IDSM.ServiceLayer
             //IEnumerable<SelectListItem> _clubs = new SelectList(_allClubs, "Club", "Club");
 
 
+            // if userTeamId==0, just return banter & clubs.
             if (userTeamId == 0)
             {
                 return new TeamOverViewViewModel()
@@ -281,10 +291,11 @@ namespace IDSM.ServiceLayer
                     UserTeamOrderPosition = 0,
                     AddedPlayerMessage = null,
                     HasEnded = false,
-                    Banters = _banterForThisGame,
+                    Banters = _bantersDto, //_banterForThisGame,
                     Clubs = _clubs
                 };
             }
+            // else get the userteam & other data for full TeamOverView
             else
             {
                 try
@@ -298,7 +309,8 @@ namespace IDSM.ServiceLayer
                     IEnumerable<PlayerDto> _playersNotPickedForAnyTeam = new List<PlayerDto>();
                     Game _game = null;
 
-                    // get this UserTeam, User and Game
+
+                    // get this UserTeam, and from it, the User and current Game (the gameid param seems redundant)
                     if (!_userTeams.TryGet(out _userTeam, x => x.Id == userTeamId))
                         throw new ApplicationException();
                     if (!_users.TryGet(out _user, x => x.UserId == _userTeam.UserId))
@@ -310,27 +322,50 @@ namespace IDSM.ServiceLayer
                     {
                         _addedPlayerMessage = "The game has ended.";
                         //_banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
-                        _banterForThisGame = GetGameBanter(_userTeam.GameId);
+                        //_banterForThisGame = GetGameBanter(_userTeam.GameId);
+                        _bantersDto = new BantersDto() { Banter = GetGameBanter(_userTeam.GameId), CurrentGameId = _userTeam.GameId, CurrentUserTeamId = userTeamId };
+
                         _playersPickedForThisTeam = GetAllChosenUserTeamPlayersForTeam(_userTeam.Id);
                         _playersNotPickedForAnyTeam = GetPlayersNotPickedForAnyTeam(_game.Id, footballClub, searchString);
                     }
                     else
                     {
-                        _banterForThisGame = GetGameBanter(_userTeam.GameId);
+                        //if we want the NEXT userTeam (rather than current), we need to find out where we are in the order of play.
+                        if(getNextTeam)
+                        {
+                            int _utCount = _game.UserTeams.Count;
+                            int _orderToGet = (_userTeam.OrderPosition + 1 == _utCount) ? 0 : _userTeam.OrderPosition + 1;
+
+                            UserTeam _nextUserTeam =
+                                _userTeams.Get(u => u.OrderPosition == _orderToGet && u.GameId == _game.Id);
+                            _userTeam = _nextUserTeam;
+
+                        }
+
+                        // setup the TeamOverViewViewModel properties
+                        _bantersDto = new BantersDto() { Banter = GetGameBanter(_userTeam.GameId), CurrentGameId = _userTeam.GameId, CurrentUserTeamId = userTeamId }; 
                         _playersPickedForThisTeam = GetAllChosenUserTeamPlayersForTeam(_userTeam.Id);
                         _playersNotPickedForAnyTeam = GetPlayersNotPickedForAnyTeam(_game.Id, footballClub, searchString);
 
                         List<UserTeam> _userTeamsForGame = _userTeams.GetList(x => x.GameId == _game.Id).ToList();
 
+
+                        // this next bit is to set the 'turns left' part of the addedplayer message
+                        // i don't really need it....
+
+                        // if it's NOT the user's turn
                         if (_userTeam.OrderPosition != _game.CurrentOrderPosition)
                         {
+                            // get the user who's turn it actually is
                             UserTeam _activeUt =
                                 _userTeams.Get(
                                     s => s.OrderPosition == _game.CurrentOrderPosition && s.GameId == _game.Id,
                                     u => u.User);
 
+                            // then get their username
                             string _tmpActiveUserName = _users.Get(x => x.UserId == _activeUt.UserId).UserName;
 
+                            // set a message to display the number of turns left until the user's turn
                             switch (_activeUt.OrderPosition > _userTeam.OrderPosition)
                             {
                                 case true:
@@ -357,11 +392,12 @@ namespace IDSM.ServiceLayer
                         GameCurrentOrderPosition = _game.CurrentOrderPosition,
                         UserTeamId = _userTeam.Id,
                         UserId = _userTeam.UserId,
-                        UserName = _user.UserName,
+                        //UserName = _user.UserName,
+                        UserName = _userTeam.User.UserName,
                         UserTeamOrderPosition = _userTeam.OrderPosition,
                         AddedPlayerMessage = _addedPlayerMessage,
                         HasEnded = _game.HasEnded,
-                        Banters = _banterForThisGame,
+                        Banters = _bantersDto, //_banterForThisGame,
                         Clubs = _clubs
                     };
                 }

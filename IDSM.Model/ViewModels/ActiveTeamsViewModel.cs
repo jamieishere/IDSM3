@@ -12,6 +12,8 @@ namespace IDSM.Model.ViewModels
     public class ActiveTeam
     {
         public int UserTeamId { get; set; }
+        public int UserId { get; set; }
+        public int GameId { get; set; }
         public bool IsActive { get; set; }
         public string GameName { get; set; }
     }

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using IDSM.Model.ViewModels;
 using IDSM.ServiceLayer;
+using IDSM.Signlr;
+using Microsoft.AspNet.SignalR;
 
 namespace IDSM.Controllers
 {
-    [Authorize]
+    [System.Web.Mvc.Authorize]
     public class ViewPlayersController : Controller
     {
         private IService _service;
@@ -39,27 +41,35 @@ namespace IDSM.Controllers
             return PartialView("playerlist", _teamOverView);
         }
 
-        public ActionResult AddPlayer(int playerId, int userTeamId, int gameId, int userId)
-        {
-            ViewBag.Status = "Thre was a problem, player not added"; 
-            if(_service.AddUserTeamPlayer(playerId, userTeamId, gameId).Status)
-                ViewBag.Status = "Player added";
+        //public ActionResult AddPlayer(int playerId, int userTeamId, int gameId, int userId)
+        //public void AddPlayer(int playerId, int userTeamId, int gameId, int userId)
+        //{
+        //    ViewBag.Status = "Thre was a problem, player not added"; 
+        //    if(_service.AddUserTeamPlayer(playerId, userTeamId, gameId).Status)
+        //        ViewBag.Status = "Player added";
 
-            return RedirectToAction("Index", new { userTeamId = userTeamId, gameId = gameId, userId = userId });
-        }
+        //    var _teamOverView = _service.GetTeamOverViewViewModel((int)userTeamId, gameId, "", "");
 
-        [HttpPost]
-        public ActionResult AddBanter(int gameId, int userTeamId, string banter)
-        {
-            _service.AddBanter(gameId, userTeamId, banter);
-            var _updatedBanter = _service.GetGameBanter(gameId);
-            return PartialView("banterlist", _updatedBanter);
-        }
+        //    var hubContext = GlobalHost.ConnectionManager.GetHubContext<BanterHub>();
+        //    var partialViewGuts = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml", _teamOverView, this.ControllerContext);
+        //    //hubContext.Clients.All.addNewSearchFormToPage(partialViewGuts);
+        //    hubContext.Clients.All.addNewPlayerListToPage(partialViewGuts);
 
-        public ActionResult Chat()
-        {
-            var _updatedBanter = _service.GetGameBanter(1);
-            return PartialView("banterlist", _updatedBanter);
-        }
+        //    //return RedirectToAction("Index", new { userTeamId = userTeamId, gameId = gameId, userId = userId });
+        //}
+
+        //[HttpPost]
+        //public ActionResult AddBanter(int gameId, int userTeamId, string banter)
+        //{
+        //    _service.AddBanter(gameId, userTeamId, banter);
+        //    var _updatedBanter = _service.GetGameBanter(gameId);
+        //    return PartialView("banterlist", _updatedBanter);
+        //}
+
+        //public ActionResult Chat()
+        //{
+        //    var _updatedBanter = _service.GetGameBanter(1);
+        //    return PartialView("banterlist", _updatedBanter);
+        //}
     }
 }

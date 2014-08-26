@@ -1,7 +1,7 @@
-﻿@model IEnumerable<IDSM.Model.Banter>
+﻿@model IDSM.Model.ViewModels.BantersDto
    
 <h3>Banter Stream</h3>
-@foreach (var item in Model)
+@foreach (var item in Model.Banter)
 {
     <p>@Html.DisplayFor(modelItem => item.BanterText)</p>           
 }

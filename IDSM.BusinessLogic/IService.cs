@@ -28,6 +28,7 @@ namespace IDSM.ServiceLayer
         OperationStatus AddUserTeamPlayer(int playerId, int userTeamId, int gameId);
 
         //GameBanterViewModel GetGameBanter(int gameId);
+        TeamOverViewViewModel GetNextTeamOverViewViewModel(int userTeamId, int gameId);
         TeamOverViewViewModel GetTeamOverViewViewModel(int userTeamId, int? gameId, string footballClub, string searchString);
 
         IEnumerable<Game> GetAllGamesUserParticipatesIn(int p);

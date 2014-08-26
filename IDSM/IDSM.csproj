@@ -253,6 +253,7 @@
     <Compile Include="SignalR.Sample\StockTicker.cs" />
     <Compile Include="SignalR.Sample\StockTickerHub.cs" />
     <Compile Include="Signlr\BanterHub.cs" />
+    <Compile Include="Signlr\ConnectionMapping.cs" />
     <Compile Include="Signlr\CreateController.cs" />
     <Compile Include="Signlr\Startup.cs">
       <SubType>Code</SubType>
