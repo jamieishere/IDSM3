@@ -8,7 +8,8 @@
 <h3>Your Active Games</h3>
     <p>
         @(Model.ActiveTeams
-            .Each(@<a href="~/ViewPlayers/@item.UserTeamId?userId=@item.UserId&gameId=@item.GameId" class="buttonId currentplayer" data-userteamid="@item.UserTeamId" data-footballclub="" data-searchstring="">@item.GameName</a>)
+            .Each(@<a href="~/ViewPlayers/@item.UserTeamId?userId=@item.UserId&gameId=@item.GameId" class="buttonId currentplayer" data-userteamid="@item.UserTeamId" data-footballclub="" data-searchstring="">@item.GameName</a>
+        )
             .Else(
                 @<div class="playerRow">
                     <b>No active games</b>
@@ -19,10 +20,8 @@
 </div>
 
 <div id="gameheading">
-<h2>Game: @Model.TeamOverView.GameName</h2>
+    <h2>Game: @Model.TeamOverView.GameName</h2>
 </div>
-
-<div id="testBanter"></div>
 
 <div id="leftcol">
     <div id="chosenplayers">
@@ -35,8 +34,7 @@
         @{ Html.RenderPartial("playerlist", Model.TeamOverView); }
     </div>
 </div>
-
-<div id="rightcol">
+<div id="middlecol">
     <div id="chat">
         @{ Html.RenderPartial("chat", Model.TeamOverView.Banters); } 
     </div>
@@ -44,7 +42,11 @@
         @{ Html.RenderPartial("banterlist", Model.TeamOverView.Banters); }
     </div>
 </div>
-
+<div id="rightcol">
+    <div id="otherteams">
+        @{ Html.RenderPartial("otherteams", Model.TeamOverView); }
+    </div>
+</div>
 
 @section scripts {
     <!--Script references. -->
@@ -58,71 +60,43 @@
         $(function () {
             // Reference the auto-generated proxy for the hub.  
             var chat = $.connection.banter;
-            // Create a function that the hub can call back to display messages.
-            //chat.client.addNewBanterToPage = function (name, message) {
-                chat.client.addNewBanterToPage = function (message) {
-                // Add the message to the page. 
-                //$('#discussion').append('<li><strong>' + htmlEncode(name)
-                //+ '</strong>: ' + htmlEncode(message) + '</li>');
-                    $('#banterlist').html(message);
-                };
-                chat.client.testAdd = function (message, gameId) {
-                    // Add the message to the page. 
-                    //$('#discussion').append('<li><strong>' + htmlEncode(name)
-                    //+ '</strong>: ' + htmlEncode(message) + '</li>');
-                    if (gameId ==  "@Model.TeamOverView.GameId" ) {
-                        $('#testBanter').html(message);
-                    }
-                };
-            //chat.client.addNewPlayerListToPage = function (playerListHtml) {
-                chat.client.addNewPlayerListToPage = function (playerListHtml, gameId) {
-                    // Add the message to the page. 
-                    //$('#discussion').append('<li><strong>' + htmlEncode(name)
-                    //+ '</strong>: ' + htmlEncode(message) + '</li>');
-                    if (gameId == "@Model.TeamOverView.GameId") {
-                        $('#playerlist').html(playerListHtml);
-                        
-                        $.connection.hub.start().done(function () {
-                            
-                            $('.addItem').click(function () {
-                                alert("alert2");
-                                var gameId2 = $(this).data('gameid');
-                                var userId = $(this).data('userid');
-                                var userTeamId = $(this).data('userteamid');
-                                var playerId = $(this).data('playerid');
-
-                                // Call the Send method on the hub. 
-                                //chat.server.send($('#displayname').val(), $('#message').val());
-                                //(int playerId, int userTeamId, int gameId, int userId)
-                                // chat.server.addPlayer(playerId, userTeamId, gameId, userId, "@Context.User.Identity.Name");
-                    chat.server.addPlayer(playerId, userTeamId, gameId2, userId);
-                    // Clear text box and reset focus for next comment. 
-                    //$('#message').val('').focus();
-                });
-
+            chat.client.addNewBanterToPage = function (message) {
+                $('#banterlist').html(message);
+            };
+            chat.client.addNewPlayerListToPage = function (playerListHtml, gameId) {
+                if (gameId == "@Model.TeamOverView.GameId") {
+                    $('#playerlist').html(playerListHtml);
+                    $.connection.hub.start().done(function () {
+                        //need to add this again, otherwise the links don't work... ask welshy why.
+                        $('.addItem').click(function () {
+                            alert("alert2");
+                            var gameId2 = $(this).data('gameid');
+                            var userId = $(this).data('userid');
+                            var userTeamId = $(this).data('userteamid');
+                            var playerId = $(this).data('playerid');
+                            chat.server.addPlayer(playerId, userTeamId, gameId2, userId);
                         });
-                        
-                    }
-                };
-                chat.client.addNewSearchFormToPage = function (searchFormHtml, gameId) {
-                    // Add the message to the page. 
-                    //$('#discussion').append('<li><strong>' + htmlEncode(name)
-                    //+ '</strong>: ' + htmlEncode(message) + '</li>');
-                    if (gameId == "@Model.TeamOverView.GameId") {
-                        $('#searchform').html(searchFormHtml);
-
-                    }
-                };
-            // Get the user name and store it to prepend to messages.
-            //$('#displayname').val(prompt('Enter your name:', ''));
+                    });
+                }
+            };
+            chat.client.addNewSearchFormToPage = function (searchFormHtml, gameId) {
+                // Add the message to the page - only if it's the right game. 
+                if (gameId == "@Model.TeamOverView.GameId") {
+                    $('#searchform').html(searchFormHtml);
+                }
+            };
+            chat.client.addNewChosenPlayersToPage = function (chosenPlayersHtml, gameId) {
+                if (gameId == "@Model.TeamOverView.GameId") {
+                    $('#chosenplayers').html(chosenPlayersHtml);
+                }
+            };
             // Set initial focus to message input box.  
             $('#message').focus();
             // Start the connection.
             $.connection.hub.start().done(function () {
                 $('#sendmessage').click(function() {
                     // Call the Send method on the hub. 
-                    //chat.server.send($('#displayname').val(), $('#message').val());
-                    chat.server.send($('#message').val(), $('#gameId').val(), $('#userTeamId').val(), "@Context.User.Identity.Name" );
+                    chat.server.addBanter($('#message').val(), $('#gameId').val(), $('#userTeamId').val(), "@Context.User.Identity.Name");
                     // Clear text box and reset focus for next comment. 
                     $('#message').val('').focus();
                 });
@@ -132,25 +106,16 @@
                     }
                 });
                 $('.addItem').click(function () {
-                    alert("alert1");
-                     var gameId = $(this).data('gameid');
+                    var gameId = $(this).data('gameid');
                     var userId = $(this).data('userid');
                     var userTeamId = $(this).data('userteamid');
                     var playerId = $(this).data('playerid');
-
-                    // Call the Send method on the hub. 
-                    //chat.server.send($('#displayname').val(), $('#message').val());
-                    //(int playerId, int userTeamId, int gameId, int userId)
-                   // chat.server.addPlayer(playerId, userTeamId, gameId, userId, "@Context.User.Identity.Name");
+                    // Call the AddPlayer method on the hub. 
                     chat.server.addPlayer(playerId, userTeamId, gameId, userId);
-                    // Clear text box and reset focus for next comment. 
-                    //$('#message').val('').focus();
                 });
-
             });
         });
         // This optional function html-encodes messages for display in the page.
-
         function htmlEncode(value) {
             var encodedValue = $('<div />').text(value).html();
             return encodedValue;

@@ -8,6 +8,7 @@ namespace IDSM.Model.ViewModels
     {
         public IEnumerable<PlayerDto> PlayersSearchedFor { get; set; }
         public IEnumerable<UserTeam_Player> PlayersChosen { get; set; }
+        public IEnumerable<UserTeam> OtherTeams { get; set; }
         //public IEnumerable<Banter> Banters { get; set; }
         public BantersDto Banters { get; set; }
         

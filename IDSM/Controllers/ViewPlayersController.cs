@@ -1,4 +1,5 @@
-﻿using System.Web.UI.WebControls;
+﻿using System.Linq;
+using System.Web.UI.WebControls;
 using IDSM.Model;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -13,7 +14,7 @@ namespace IDSM.Controllers
     public class ViewPlayersController : Controller
     {
         private IService _service;
-        private const int _teamSize = 5;
+        //private const int _teamSize = 2;
 
         public ViewPlayersController(IService service)
         {
@@ -40,36 +41,5 @@ namespace IDSM.Controllers
             }
             return PartialView("playerlist", _teamOverView);
         }
-
-        //public ActionResult AddPlayer(int playerId, int userTeamId, int gameId, int userId)
-        //public void AddPlayer(int playerId, int userTeamId, int gameId, int userId)
-        //{
-        //    ViewBag.Status = "Thre was a problem, player not added"; 
-        //    if(_service.AddUserTeamPlayer(playerId, userTeamId, gameId).Status)
-        //        ViewBag.Status = "Player added";
-
-        //    var _teamOverView = _service.GetTeamOverViewViewModel((int)userTeamId, gameId, "", "");
-
-        //    var hubContext = GlobalHost.ConnectionManager.GetHubContext<BanterHub>();
-        //    var partialViewGuts = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml", _teamOverView, this.ControllerContext);
-        //    //hubContext.Clients.All.addNewSearchFormToPage(partialViewGuts);
-        //    hubContext.Clients.All.addNewPlayerListToPage(partialViewGuts);
-
-        //    //return RedirectToAction("Index", new { userTeamId = userTeamId, gameId = gameId, userId = userId });
-        //}
-
-        //[HttpPost]
-        //public ActionResult AddBanter(int gameId, int userTeamId, string banter)
-        //{
-        //    _service.AddBanter(gameId, userTeamId, banter);
-        //    var _updatedBanter = _service.GetGameBanter(gameId);
-        //    return PartialView("banterlist", _updatedBanter);
-        //}
-
-        //public ActionResult Chat()
-        //{
-        //    var _updatedBanter = _service.GetGameBanter(1);
-        //    return PartialView("banterlist", _updatedBanter);
-        //}
     }
 }

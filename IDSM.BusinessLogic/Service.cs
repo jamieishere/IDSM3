@@ -220,11 +220,6 @@ namespace IDSM.ServiceLayer
             var _tempTeam = new ActiveTeam();
             var _tempTeamOV = new TeamOverViewViewModel();
 
-            //foreach(Game game in _games)
-            //{
-            //    _tempGame.GameName = game.Name;
-            //    _tempGame.OrderPosition = game.UserTeams.
-            //}
 
             foreach (UserTeam uts in _activeUserTeams)
             {
@@ -262,17 +257,9 @@ namespace IDSM.ServiceLayer
         {
             BantersDto _bantersDto = new BantersDto()
                 {Banter = new List<Banter>(), CurrentGameId = (gameId==null) ? 0 : (int)gameId, CurrentUserTeamId = userTeamId};
-           // IEnumerable<Banter> _banterForThisGame = new List<Banter>();
 
-            //IEnumerable<SelectListItem> _clubs = new SelectList(_players.GetList().OrderBy(p => p.Club).Select(p => p.Club).Distinct());
-            // refactor
-            // select list requires an object to pick columns from
-            // but the whole player list is insane.
-            //SelectListItem _tmp = new SelectListItem();
-            //_tmp.
             IEnumerable<SelectListItem> _clubs = _players.GetList().OrderBy(p => p.Club).Select(p => new SelectListItem(){Value=p.Club, Text =p.Club }).Distinct();
-            // IDictionary<string, string> = _allClubs.ToDictionary(club => club.n)
-            //IEnumerable<SelectListItem> _clubs = new SelectList(_allClubs, "Club", "Club");
+
 
 
             // if userTeamId==0, just return banter & clubs.
@@ -282,6 +269,7 @@ namespace IDSM.ServiceLayer
                 {
                     PlayersSearchedFor = null,
                     PlayersChosen = null,
+                    OtherTeams = null,
                     GameId = 0,
                     GameName = null,
                     GameCurrentOrderPosition = 0,
@@ -318,8 +306,23 @@ namespace IDSM.ServiceLayer
                     if (!_games.TryGet(out _game, x => x.Id == _userTeam.GameId))
                         throw new ApplicationException();
 
+                    IEnumerable<UserTeam> _otherUserTeams = _userTeams.GetList(u => u.GameId == _userTeam.GameId);
+                    List<UserTeam> _test = _otherUserTeams.ToList();
+
                     if (_game.HasEnded)
                     {
+                        //if we want the NEXT userTeam (rather than current), we need to find out where we are in the order of play.
+                        if (getNextTeam)
+                        {
+                            int _utCount = _game.UserTeams.Count;
+                            int _orderToGet = (_userTeam.OrderPosition + 1 == _utCount) ? 0 : _userTeam.OrderPosition + 1;
+
+                            UserTeam _nextUserTeam =
+                                _userTeams.Get(u => u.OrderPosition == _orderToGet && u.GameId == _game.Id);
+                            _userTeam = _nextUserTeam;
+
+                        }
+
                         _addedPlayerMessage = "The game has ended.";
                         //_banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
                         //_banterForThisGame = GetGameBanter(_userTeam.GameId);
@@ -387,6 +390,7 @@ namespace IDSM.ServiceLayer
                     {
                         PlayersSearchedFor = _playersNotPickedForAnyTeam,
                         PlayersChosen = _playersPickedForThisTeam,
+                        OtherTeams = _otherUserTeams,
                         GameId = _userTeam.GameId,
                         GameName = _game.Name,
                         GameCurrentOrderPosition = _game.CurrentOrderPosition,

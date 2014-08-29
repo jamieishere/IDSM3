@@ -27,28 +27,14 @@ namespace IDSM.Signlr
             _service =  DependencyResolver.Current.GetService<IService>(); 
         }
 
-
-        public void Send(string message, int gameId, int userTeamId, string who)
-        {
-            // Call the addNewMessageToPage method to update clients.
-            // this uses a jquery method on the page to append to a div
-           
-
+        public void AddBanter(string message, int gameId, int userTeamId, string who)
+        {          
             string name = Context.User.Identity.Name;
-            //Clients.All.testAdd("name: " + name);
 
-            //ensures goes to all devices user is using.
             foreach (var connectionId in _connections.GetConnections(who))
             {
                 Clients.Client(connectionId).testAdd(name + ": " + message, gameId);
             }
-
-            //next problem is - this could get pushed to whichever game they are currently viewing.
-
-
-
-
-
 
             try
             {
@@ -72,51 +58,53 @@ namespace IDSM.Signlr
             }
 
         }
-        // if you want to use multiple event handerls for a client method that the server calls you cannot use the generated proxy
-        //http://www.asp.net/signalr/overview/signalr-20/hubs-api/hubs-api-guide-javascript-client
-        // might be usefl
 
-
-
-        //public void AddPlayer(int playerId, int userTeamId, int gameId, int userId, string who)
         public void AddPlayer(int playerId, int userTeamId, int gameId, int userId)
         {
             try
             {
 
-                //string name = Context.User.Identity.Name;
-                //Clients.All.testAdd("name: " + name);
+                var bogusController = ViewRenderer.CreateController<HomeController>();
 
-                //ensures goes to all devices user is using.
-               
+                _service.AddUserTeamPlayer(playerId, userTeamId, gameId);
 
-            _service.AddUserTeamPlayer(playerId, userTeamId, gameId);
+                var _teamOverView = _service.GetTeamOverViewViewModel(userTeamId, gameId, "", "");
+                var partialViewPlayerList = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml",_teamOverView,bogusController.ControllerContext);
+                var searchForm = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/searchform.cshtml", _teamOverView,bogusController.ControllerContext);
+                var _chosenPlayers = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/chosenplayers.cshtml", _teamOverView,bogusController.ControllerContext);
 
-            var _teamOverView = _service.GetTeamOverViewViewModel(userTeamId, gameId, "", "");
-            var _teamOverView2 = _service.GetNextTeamOverViewViewModel(userTeamId, gameId);
+                // here, if game has ended, just do a client all.
+                if (_teamOverView.HasEnded)
+                {
+                    Clients.All.addNewPlayerListToPage(partialViewPlayerList, gameId);
+                    Clients.All.addNewSearchFormToPage(searchForm, gameId);
+                    Clients.Caller.addNewChosenPlayersToPage(_chosenPlayers, gameId);
+                }
+                else
+                {
+                    var _teamOverView2 = _service.GetNextTeamOverViewViewModel(userTeamId, gameId);             
 
-            var bogusController = ViewRenderer.CreateController<HomeController>();
+                    // update this client's view - remove the form
+                    Clients.Caller.addNewPlayerListToPage(partialViewPlayerList, gameId);
+                    Clients.Caller.addNewSearchFormToPage(searchForm, gameId);
+                    Clients.Caller.addNewChosenPlayersToPage(_chosenPlayers, gameId);
 
-            var partialViewPlayerList = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml", _teamOverView, bogusController.ControllerContext);
-            var searchForm = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/searchform.cshtml", _teamOverView, bogusController.ControllerContext);
+                    var partialViewPlayerList2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml",_teamOverView2,bogusController.ControllerContext);
+                    var searchForm2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/searchform.cshtml", _teamOverView2,bogusController.ControllerContext);
+                    var _chosenPlayers2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/chosenplayers.cshtml", _teamOverView2,bogusController.ControllerContext);
 
-            // update this client's view - remove the form
-            Clients.Caller.addNewPlayerListToPage(partialViewPlayerList, gameId);
-            Clients.Caller.addNewSearchFormToPage(searchForm, gameId);
-
-            var partialViewPlayerList2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml", _teamOverView2, bogusController.ControllerContext);
-            var searchForm2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/searchform.cshtml", _teamOverView2, bogusController.ControllerContext);
-
-            // only send the new content to the NEXT userteam player, not all the others (it's only the next userteam player who should see the addplayerform)
-            // hopefully username matches Context.User.Identity.Name;
-            foreach (var connectionId in _connections.GetConnections(_teamOverView2.UserName))
-            {
-                Clients.Client(connectionId).addNewPlayerListToPage(partialViewPlayerList2, gameId); 
-                Clients.Client(connectionId).addNewSearchFormToPage(searchForm2, gameId);
+                    // only send the new content to the NEXT userteam player, not all the others (it's only the next userteam player who should see the addplayerform)
+                    // hopefully username matches Context.User.Identity.Name;
+                    foreach (var connectionId in _connections.GetConnections(_teamOverView2.UserName))
+                    {
+                        Clients.Client(connectionId).addNewPlayerListToPage(partialViewPlayerList2, gameId);
+                        Clients.Client(connectionId).addNewSearchFormToPage(searchForm2, gameId);
+                        Clients.Client(connectionId).addNewChosenPlayersToPage(_chosenPlayers2, gameId);
+                        //Clients.Others.addNewPlayerListToPage(partialViewPlayerList2); 
+                        // Clients.Others.addNewSearchFormToPage(searchForm2);
+                    }
             }
-            //Clients.Others.addNewPlayerListToPage(partialViewPlayerList2); 
-           // Clients.Others.addNewSearchFormToPage(searchForm2);
-            }
+        }
             catch (Exception ex)
             {
 
