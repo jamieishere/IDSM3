@@ -56,6 +56,7 @@ namespace IDSM.ServiceLayer
             {
                 OperationStatus.CreateFromException("Create Game failed.", _exp, true);
                 throw; 
+                // error handling approach: log it, fail.  no idea how to handle anything gracefully - it either works, or fails.
             }
             return _opStatus;
         }
@@ -322,9 +323,7 @@ namespace IDSM.ServiceLayer
 
                         }
 
-                        var _winner = _userTeams.Get(u => u.Id == _game.WinnerId);
-
-                        _addedPlayerMessage = "Game finished!<br />Winner is "+_winner.User.UserName;
+                        _addedPlayerMessage = "The game has ended.";
                         //_banterForThisGame = _banters.GetList(b => b.GameId == _userTeam.GameId);
                         //_banterForThisGame = GetGameBanter(_userTeam.GameId);
                         _bantersDto = new BantersDto() { Banter = GetGameBanter(_userTeam.GameId), CurrentGameId = _userTeam.GameId, CurrentUserTeamId = userTeamId };

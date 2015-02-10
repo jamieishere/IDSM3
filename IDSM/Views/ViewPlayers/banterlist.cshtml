@@ -1,8 +1,8 @@
 ﻿@model IDSM.Model.ViewModels.BantersDto
-@using IDSM.Helpers
-
+   
+<h3>Banter Stream</h3>
 @foreach (var item in Model.Banter)
 {
-    <p>@Html.DisplayFor(modelItem => item.BanterText) @*@Html.ExternalLink("#", "Vote Banter", new {@class = "voteBanter"}, new {playerid = item.Id, userteamid = Model.UserTeamId, gameid = Model.GameId, userid = 1})*@</p>           
+    <p>@Html.DisplayFor(modelItem => item.BanterText)</p>           
 }
 

@@ -2,13 +2,16 @@
 @using IDSM.Model
 @model IDSM.Model.ViewModels.TeamOverViewViewModel
 
+<h3>Players in everyone elses teams so far..</h3>
+    
 <div id="otherteams">
+    @Model.OtherTeams.Count()
     @foreach(UserTeam team in Model.OtherTeams)
     {
-        <h5>@team.User.UserName</h5>
+        <h3>@team.User.UserName</h3>
         foreach(UserTeam_Player player in team.UserTeam_Players)
         {
-            @Html.Partial("~/Views/ViewPlayers/OtherTeamChosenPlayerRow.cshtml", player)
+            <div class="playerRow">@Html.Partial("~/Views/ViewPlayers/OtherTeamChosenPlayerRow.cshtml", player)</div>
         }
     }
 </div>

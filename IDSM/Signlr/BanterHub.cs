@@ -72,7 +72,6 @@ namespace IDSM.Signlr
                 var partialViewPlayerList = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml",_teamOverView,bogusController.ControllerContext);
                 var searchForm = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/searchform.cshtml", _teamOverView,bogusController.ControllerContext);
                 var _chosenPlayers = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/chosenplayers.cshtml", _teamOverView,bogusController.ControllerContext);
-                var _otherTeamPlayers = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/otherteams.cshtml", _teamOverView, bogusController.ControllerContext);
 
                 // here, if game has ended, just do a client all.
                 if (_teamOverView.HasEnded)
@@ -80,7 +79,6 @@ namespace IDSM.Signlr
                     Clients.All.addNewPlayerListToPage(partialViewPlayerList, gameId);
                     Clients.All.addNewSearchFormToPage(searchForm, gameId);
                     Clients.Caller.addNewChosenPlayersToPage(_chosenPlayers, gameId);
-                    Clients.All.addNewOtherTeamPlayersToPage(_otherTeamPlayers, gameId);
                 }
                 else
                 {
@@ -90,12 +88,10 @@ namespace IDSM.Signlr
                     Clients.Caller.addNewPlayerListToPage(partialViewPlayerList, gameId);
                     Clients.Caller.addNewSearchFormToPage(searchForm, gameId);
                     Clients.Caller.addNewChosenPlayersToPage(_chosenPlayers, gameId);
-                    Clients.Caller.addNewOtherTeamPlayersToPage(_otherTeamPlayers, gameId);
 
                     var partialViewPlayerList2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/playerlist.cshtml",_teamOverView2,bogusController.ControllerContext);
                     var searchForm2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/searchform.cshtml", _teamOverView2,bogusController.ControllerContext);
                     var _chosenPlayers2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/chosenplayers.cshtml", _teamOverView2,bogusController.ControllerContext);
-                    var _otherTeamPlayers2 = ViewRenderer.RenderPartialView("~/Views/ViewPlayers/otherteams.cshtml", _teamOverView2, bogusController.ControllerContext);
 
                     // only send the new content to the NEXT userteam player, not all the others (it's only the next userteam player who should see the addplayerform)
                     // hopefully username matches Context.User.Identity.Name;
@@ -104,7 +100,6 @@ namespace IDSM.Signlr
                         Clients.Client(connectionId).addNewPlayerListToPage(partialViewPlayerList2, gameId);
                         Clients.Client(connectionId).addNewSearchFormToPage(searchForm2, gameId);
                         Clients.Client(connectionId).addNewChosenPlayersToPage(_chosenPlayers2, gameId);
-                        Clients.Client(connectionId).addNewOtherTeamPlayersToPage(_otherTeamPlayers2, gameId);
                         //Clients.Others.addNewPlayerListToPage(partialViewPlayerList2); 
                         // Clients.Others.addNewSearchFormToPage(searchForm2);
                     }
