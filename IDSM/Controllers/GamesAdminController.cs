@@ -13,13 +13,17 @@ namespace IDSM.Controllers
         //IWebSecurityWrapper _wr;
         private readonly IService _service;
 
+        /// <summary>
+        /// Instantiates controller class. Service layer injected by Unity.
+        /// </summary>
+        /// <param name="service"></param>
         public GamesAdminController(IService service)
         {
             _service = service;
         }
 
         /// <summary>
-        /// Index
+        /// Displays 'Games Homepage' view - list of all active games, plus navigation to create new games & reset games 
         /// </summary>
         /// <returns></returns>
         public ViewResult Index()
@@ -30,7 +34,7 @@ namespace IDSM.Controllers
         }
 
         /// <summary>
-        /// Create
+        /// Returns create new game view
         /// </summary>
         /// <returns>View</returns>
         public ViewResult Create()
@@ -39,8 +43,7 @@ namespace IDSM.Controllers
         }
 
         /// <summary>
-        /// Create
-        /// Model binds posted form values, creates new Game.
+        /// Creates new Game from posted form values
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
@@ -52,13 +55,32 @@ namespace IDSM.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Returns list of users that you can add to a game 
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
         public ViewResult ViewUsers(Game game)
         {
             return View(_service.GetAddUserTeamViewModelForGame(game));
         }
 
+
         /// <summary>
-        /// Deletes all userteams, sets game properties to default
+        /// Adds selected User to this Game.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="gameId"></param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public ActionResult AddUserToGame(int userId, int gameId)
+        {
+            _service.AddUserToGame(userId, gameId);
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// Resets a game: deletes all userteams, sets game properties to default
         /// </summary>
         /// <param name="gameId"></param>
         /// <returns>RedirectToAction - Index</returns>
@@ -82,17 +104,5 @@ namespace IDSM.Controllers
             return RedirectToAction("Index");
         }
 
-        /// <summary>
-        /// Adds selected User to this Game.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="gameId"></param>
-        /// <returns></returns>
-        /// <remarks></remarks>
-        public ActionResult AddUserToGame(int userId, int gameId)
-        {
-            _service.AddUserToGame(userId, gameId);
-            return RedirectToAction("Index");
-        }
     }
 }

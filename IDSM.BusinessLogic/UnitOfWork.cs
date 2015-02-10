@@ -7,6 +7,9 @@ using IDSM.Repository;
 
 namespace IDSM.ServiceLayer
 {
+    /// <summary>
+    /// Wraps DBContext. Not entirely sure this is necessary.
+    /// </summary>
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private IDSMContext _context;

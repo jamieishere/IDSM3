@@ -17,6 +17,9 @@ using System.Configuration;
 
 namespace IDSM.ServiceLayer
 {
+    /// <summary>
+    /// Service layer to wrap all the repository classes 
+    /// </summary>
     public class Service: IService, IDisposable
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -27,11 +30,14 @@ namespace IDSM.ServiceLayer
         private IUserTeam_PlayerRepository _userTeamPlayers;
         private IBanterRepository _banters;
 
+        // unit of work injected by Unity
         public Service(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             InitialiseRepos();
         }
+
+        // create instances of all repository classes
         private void InitialiseRepos(){
             _users = _users ?? new UserRepository(_unitOfWork.Context);
             _userTeams = _userTeams ?? new UserTeamRepository(_unitOfWork.Context);
@@ -41,9 +47,14 @@ namespace IDSM.ServiceLayer
             _banters= _banters ?? new BanterRepository(_unitOfWork.Context);
         }
 
-        #region PUBLIC METHODS
+        #region PUBLIC METHODS ----- these are used in the Controllers
 
-        // want generic create
+        /// <summary>
+        /// Creates a new game
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public OperationStatus CreateGame(int userId, string name)
         {
             OperationStatus _opStatus;
@@ -60,12 +71,20 @@ namespace IDSM.ServiceLayer
             return _opStatus;
         }
 
+        /// <summary>
+        /// Gets all games
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Game> GetAllGames()
         {
             var _allgames = _games.GetAllGames();
             return _allgames;
         }
 
+        /// <summary>
+        /// Gets all player's clubs
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<string> GetAllClubs()
         {
             var _clubLst = new List<string>();
@@ -80,6 +99,10 @@ namespace IDSM.ServiceLayer
             return _userTeams.TryGet(out ut, x => x.Id == userTeamId);
         }
 
+        /// <summary>
+        /// Starts a game - sets initial conditions for the game, shuffles userteam order etc.
+        /// </summary>
+        /// <param name="gameId"></param>
         public void StartGame(int gameId)
         {
             try
@@ -106,6 +129,10 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        /// <summary>
+        /// Resets a game - deletes all userteams, etc
+        /// </summary>
+        /// <param name="gameId"></param>
         public void ResetGame(int gameId)
         {
             try
@@ -145,6 +172,11 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        /// <summary>
+        /// Adds a userteam (user's team) to a game
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="gameId"></param>
         public void AddUserToGame(int userId, int gameId)
         {
             try
@@ -163,6 +195,12 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        /// <summary>
+        /// Adds a banter entry
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <param name="userTeamId"></param>
+        /// <param name="banter"></param>
         public void AddBanter(int gameId, int userTeamId, string banter)
         {
             try
@@ -177,6 +215,13 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        /// <summary>
+        /// Adds a player to the user's team for this game.
+        /// </summary>
+        /// <param name="playerId"></param>
+        /// <param name="userTeamId"></param>
+        /// <param name="gameId"></param>
+        /// <returns></returns>
         public OperationStatus AddUserTeamPlayer(int playerId, int userTeamId, int gameId)
         {
             Player _player = null;
@@ -211,6 +256,14 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        /// <summary>
+        /// Get all active games for a user (games started)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="userTeamId"></param>
+        /// <param name="footballClub"></param>
+        /// <param name="searchString"></param>
+        /// <returns></returns>
         public ActiveTeamsViewModel GetAllGamesUserCurrentlyPlaying(int userId, int? userTeamId, string footballClub, string searchString)
         {
             //var _activeGames = _games.GetAllGamesUserCurrentlyPlaying(userId);
@@ -416,12 +469,22 @@ namespace IDSM.ServiceLayer
             }
         }
 
+        /// <summary>
+        /// Get all games a user has been added to (may not have started)
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public IEnumerable<Game> GetAllGamesUserParticipatesIn(int p)
         {
             var _allGamesForThisUser = _games.GetAllGamesUserParticipatesIn(p);
             return _allGamesForThisUser;
         }
 
+        /// <summary>
+        /// Get all banter for this game
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <returns></returns>
         public IEnumerable<Banter> GetGameBanter(int gameId)
         {
             var _allBanterForThisGame = _banters.GetList(b => b.GameId==gameId).OrderByDescending(b => b.TimeStamp);
@@ -582,6 +645,17 @@ namespace IDSM.ServiceLayer
             return ProcessCsvHelper(filePath, new IDSMContext());
         }
 
+        
+        /// <summary>
+        ///// Uploads players data: requires a correctly formatted csv containing Player data
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="DataContext"></param>
+        /// <returns></returns>
+        /// <remarks>
+        ///// TODO: Currently only works for a small number of rows.  Real file size is 100,000+ rows.  This breaks the upload.
+        ///// Need to ensure it works for at least the full set of Premiership clubs.
+        /// </remarks>
         public static OperationStatus ProcessCsvHelper(string filePath, IDSMContext DataContext)
         {
             string Feedback = string.Empty;

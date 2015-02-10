@@ -64,17 +64,16 @@ namespace IDSM.Controllers
             return View();
         }
 
-        /// <summary>
-        /// Upload
-        /// Takes a correctly formatted csv containing Player data & uploads
-        /// </summary>
-        /// <param name="FileUpload"></param>
-        /// <returns>View</returns>
-        /// <remarks>
-        /// TODO:
-        /// Currently only works for a small number of rows.  Real file size is 100,000+ rows.  This breaks the upload.
-        /// Need to ensure it works for at least the full set of Premiership clubs.
-        /// </remarks>
+        ///// <summary>
+        ///// Uploads players data: requires a correctly formatted csv containing Player data
+        ///// </summary>
+        ///// <param name="FileUpload"></param>
+        ///// <returns>View</returns>
+        ///// <remarks>
+        ///// TODO:
+        ///// Currently only works for a small number of rows.  Real file size is 100,000+ rows.  This breaks the upload.
+        ///// Need to ensure it works for at least the full set of Premiership clubs.
+        ///// </remarks>
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase FileUpload)
         {
@@ -83,7 +82,7 @@ namespace IDSM.Controllers
             if (FileUpload != null && FileUpload.ContentLength > 0)
             {
                 string fileName = Path.GetFileName(FileUpload.FileName);
-               
+
                 string path = Path.Combine(ConfigurationManager.AppSettings["AppDataUploadsPath"], fileName);
 
                 // take the upload file and save to the app_data/uploads folder.
@@ -94,7 +93,7 @@ namespace IDSM.Controllers
                 }
                 catch (Exception ex)
                 {
-                    opStatus = OperationStatus.CreateFromException("Error saving CSV file to "+path, ex);
+                    opStatus = OperationStatus.CreateFromException("Error saving CSV file to " + path, ex);
                     ILogger _logger = LogFactory.Logger();
                     _logger.Error(opStatus.Message, ex);
                 }

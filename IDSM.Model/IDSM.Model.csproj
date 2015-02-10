@@ -129,7 +129,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Web.config.install.xdt" />
     <None Include="Web.config.uninstall.xdt" />
   </ItemGroup>
