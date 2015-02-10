@@ -67,9 +67,9 @@
                 if (gameId == "@Model.TeamOverView.GameId") {
                     $('#playerlist').html(playerListHtml);
                     $.connection.hub.start().done(function () {
-                        //need to add this again, otherwise the links don't work... ask welshy why.
+                        //need to add this again, otherwise the links don't work... ask welshy why. presume its because replacing those elements which had class of addItem after the click event has been originally added by jquery breaks that connection/watch/association... so 
                         $('.addItem').click(function () {
-                            alert("alert2");
+                            //alert("alert2");
                             var gameId2 = $(this).data('gameid');
                             var userId = $(this).data('userid');
                             var userTeamId = $(this).data('userteamid');
@@ -88,6 +88,11 @@
             chat.client.addNewChosenPlayersToPage = function (chosenPlayersHtml, gameId) {
                 if (gameId == "@Model.TeamOverView.GameId") {
                     $('#chosenplayers').html(chosenPlayersHtml);
+                }
+            };
+            chat.client.addNewOtherTeamPlayersToPage = function (otherTeamPlayersHtml, gameId) {
+                if (gameId == "@Model.TeamOverView.GameId") {
+                    $('#otherteams').html(otherTeamPlayersHtml);
                 }
             };
             // Set initial focus to message input box.  
